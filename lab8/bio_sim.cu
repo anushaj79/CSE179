@@ -61,7 +61,17 @@ int main(int argc, char** argv) {
     size_t size = M * N * sizeof(int);
     int *h_matrix = new int[M * N];
 
-    for (int i = 0; i < M * N; i++) h_matrix[i] = rand() % 2;
+    // for (int i = 0; i < M * N; i++) h_matrix[i] = rand() % 2;
+    int given_start[24] = {
+    0,0,0,1,
+    0,0,0,1,
+    0,1,0,0,
+    1,1,1,0,
+    0,1,0,0,
+    0,1,0,0
+    };
+
+    for(int i=0; i<24; i++) h_matrix[i] = given_start[i];
 
     if (debug) {
         std::cout << "Start:" << std::endl;

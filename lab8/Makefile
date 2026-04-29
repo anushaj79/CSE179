@@ -4,8 +4,8 @@ TARGET = bio_sim
 
 all: $(TARGET)
 
-$(TARGET): bio_sim.cu
-	$(CC) $(CFLAGS) -o $(TARGET) bio_sim.cu
+$(TARGET): $(TARGET).cu
+	$(CC) $(CFLAGS) -o $(TARGET) $(TARGET).cu
 
 clean:
 	rm -f $(TARGET)
