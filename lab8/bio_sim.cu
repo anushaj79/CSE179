@@ -106,7 +106,8 @@ int main(int argc, char** argv) {
         printMatrix(h_matrix, M, N);
     }
 
-    cudaFree(d_current); cudaFree(d_next);
+    cudaFree(d_current); 
+    cudaFree(d_next);
     delete[] h_matrix;
     return 0;
 }
