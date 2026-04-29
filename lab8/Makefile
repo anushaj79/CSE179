@@ -1,11 +1,11 @@
 CC = nvcc
 CFLAGS = -O3
-TARGET = biology_sim
+TARGET = bio_sim
 
 all: $(TARGET)
 
-$(TARGET): biology_sim.cu
-	$(CC) $(CFLAGS) -o $(TARGET) biology_sim.cu
+$(TARGET): bio_sim.cu
+	$(CC) $(CFLAGS) -o $(TARGET) bio_sim.cu
 
 clean:
 	rm -f $(TARGET)
