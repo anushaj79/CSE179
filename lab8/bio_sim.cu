@@ -3,19 +3,21 @@
 #include <string>
 #include <cuda_runtime.h>
 
+//finite state machine logic
 __global__ void evolveKernel(int *current, int *next, int M, int N) {
-    int r = blockIdx.y * blockDim.y + threadIdx.y;
-    int c = blockIdx.x * blockDim.x + threadIdx.x;
+    int r = blockIdx.y * blockDim.y + threadIdx.y; //thread row
+    int c = blockIdx.x * blockDim.x + threadIdx.x; //thread column
 
     if (r < M && c < N) {
         int liveNeighbors = 0;
 
+        //check all 8 neighbors
         for (int dr = -1; dr <= 1; dr++) {
             for (int dc = -1; dc <= 1; dc++) {
-                if (dr == 0 && dc == 0) continue;
+                if (dr == 0 && dc == 0) continue; //skip self
                 int nr = r + dr;
                 int nc = c + dc;
-
+                // handle corder, edge, middle
                 if (nr >= 0 && nr < M && nc >= 0 && nc < N) {
                     liveNeighbors += current[nr * N + nc];
                 }
@@ -25,15 +27,16 @@ __global__ void evolveKernel(int *current, int *next, int M, int N) {
         int currentState = current[r * N + c];
         int nextState = currentState;
 
-        if (currentState == 1) {
+        if (currentState == 1) { //kill cell conditions
             if (liveNeighbors <= 1 || liveNeighbors >= 4) {
                 nextState = 0;
             }
-        } else {
+        } else { //new cell conditions
             if (liveNeighbors == 2 || liveNeighbors == 3) {
                 nextState = 1;
             }
         }
+        // write to next state to avoid race conditions
         next[r * N + c] = nextState;
     }
 }
@@ -82,7 +85,7 @@ int main(int argc, char** argv) {
     int *d_current, *d_next;
     cudaMalloc(&d_current, size);
     cudaMalloc(&d_next, size);
-    cudaMemcpy(d_current, h_matrix, size, cudaMemcpyHostToDevice);
+    cudaMemcpy(d_current, h_matrix, size, cudaMemcpyHostToDevice); // send initial state to slaves
 
     dim3 blockSize(16, 16);
     dim3 gridSize((N + blockSize.x - 1) / blockSize.x, (M + blockSize.y - 1) / blockSize.y);
@@ -90,10 +93,12 @@ int main(int argc, char** argv) {
     for (int k = 0; k < K; k++) {
         evolveKernel<<<gridSize, blockSize>>>(d_current, d_next, M, N);
         
+        // swap pointers for next iteration to synch threads
         int *temp = d_current;
         d_current = d_next;
         d_next = temp;
 
+        // print intermediate states if debug
         if (debug) {
             cudaMemcpy(h_matrix, d_current, size, cudaMemcpyDeviceToHost);
             std::cout << "Round " << k << ":" << std::endl;
@@ -101,6 +106,7 @@ int main(int argc, char** argv) {
         }
     }
 
+    // master gets final state from slaves and prints
     if (!debug) {
         cudaMemcpy(h_matrix, d_current, size, cudaMemcpyDeviceToHost);
         printMatrix(h_matrix, M, N);
