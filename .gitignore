@@ -6,3 +6,6 @@ submissions/*
 
 course_material/
 course_material/*
+
+.config/
+.config/*
