@@ -12,7 +12,7 @@ int minKey(int key[], bool mstSet[]) {
     #pragma omp parallel
     {
         int local_min = INT_MAX, local_index = -1;
-        #pragma omp for nowait
+        #pragma omp for nowait // each thread finds local min
         for (int v = 0; v < V; v++) {
             if (mstSet[v] == false && key[v] < local_min) {
                 local_min = key[v];
@@ -47,7 +47,7 @@ void primMST(int graph[V][V]) {
         if (u == -1) break; 
         mstSet[u] = true;
 
-        #pragma omp parallel for
+        #pragma omp parallel for // update key values in parallel
         for (int v = 0; v < V; v++) {
             if (graph[u][v] && mstSet[v] == false && graph[u][v] < key[v]) {
                 parent[v] = u;
