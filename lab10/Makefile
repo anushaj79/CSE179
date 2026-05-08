@@ -2,19 +2,16 @@ CC = gcc
 CFLAGS = -O3 -Wall
 OMP_FLAGS = -fopenmp
 
-SERIAL_TARGET = prims_serial
-PARALLEL_TARGET = prims_parallel
+SERIAL = prims_serial
+PARALLEL = prims_parallel
 
-SERIAL_SRC = prims_serial.c
-PARALLEL_SRC = prims_parallel.c
+all: $(SERIAL) $(PARALLEL)
 
-all: $(SERIAL_TARGET) $(PARALLEL_TARGET)
+$(SERIAL): prims_serial.c
+	$(CC) $(CFLAGS) -o $(SERIAL) prims_serial.c
 
-$(SERIAL_TARGET): $(SERIAL_SRC)
-	$(CC) $(CFLAGS) -o $(SERIAL_TARGET) $(SERIAL_SRC)
-
-$(PARALLEL_TARGET): $(PARALLEL_SRC)
-	$(CC) $(CFLAGS) $(OMP_FLAGS) -o $(PARALLEL_TARGET) $(PARALLEL_SRC)
+$(PARALLEL): prims_parallel.c
+	$(CC) $(CFLAGS) $(OMP_FLAGS) -o $(PARALLEL) prims_parallel.c
 
 clean:
-	rm -f $(SERIAL_TARGET) $(PARALLEL_TARGET) adj_matrix.txt
+	rm -f $(SERIAL) $(PARALLEL)
