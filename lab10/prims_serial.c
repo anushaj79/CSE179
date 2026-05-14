@@ -5,15 +5,17 @@
 #include <time.h>
 
 #define V 100
-
+// find vertex w min key that isnt in MST yet
 int minKey(int key[], bool mstSet[]) {
-    int min = INT_MAX, min_index;
+    int min = INT_MAX;
+    int min_index = -1;
     for (int v = 0; v < V; v++)
         if (mstSet[v] == false && key[v] < min)
             min = key[v], min_index = v;
     return min_index;
 }
 
+//using adjacency matrix to rep graph
 void primMST(int graph[V][V]) {
     int parent[V], key[V];
     bool mstSet[V];
@@ -25,7 +27,6 @@ void primMST(int graph[V][V]) {
 
     key[0] = 0;
     parent[0] = -1;
-
     for (int count = 0; count < V - 1; count++) {
         int u = minKey(key, mstSet);
         mstSet[u] = true;
@@ -36,7 +37,9 @@ void primMST(int graph[V][V]) {
     }
 
     int total_weight = 0;
-    for (int i = 1; i < V; i++) total_weight += graph[i][parent[i]];
+    for (int i = 1; i < V; i++) {
+        total_weight += graph[i][parent[i]];
+    }
     printf("Serial Total MST Weight: %d\n", total_weight);
 }
 
@@ -53,7 +56,7 @@ int main() {
     clock_t start = clock();
     primMST(graph);
     clock_t end = clock();
-    
     printf("Serial Time: %f s\n", (double)(end - start) / CLOCKS_PER_SEC);
+
     return 0;
 }
