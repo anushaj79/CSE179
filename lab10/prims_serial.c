@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <time.h>
 
-#define V 100 // 
+#define V 100
 
 int minKey(int key[], bool mstSet[]) {
     int min = INT_MAX, min_index;
@@ -42,8 +42,8 @@ void primMST(int graph[V][V]) {
 
 int main() {
     int graph[V][V];
-    FILE *file = fopen("adj_matrix.txt", "r"); // [cite: 26, 29]
-    if (!file) { printf("Error opening file!\n"); return 1; }
+    FILE *file = fopen("adj_matrix.txt", "r"); 
+    if (!file) return 1;
 
     for (int i = 0; i < V; i++)
         for (int j = 0; j < V; j++)
