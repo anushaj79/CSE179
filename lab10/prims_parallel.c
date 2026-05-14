@@ -10,7 +10,6 @@ void primMST(int graph[V][V]) {
     int parent[V], d[V];
     bool mstSet[V];
 
-    // Initialization
     for (int i = 0; i < V; i++) {
         d[i] = INT_MAX;
         mstSet[i] = false;
@@ -23,7 +22,7 @@ void primMST(int graph[V][V]) {
         int u = -1;
         int min = INT_MAX;
 
-        // find globally closest node using reduction 
+        // finding globally closest node using reduction 
         #pragma omp parallel
         {
             int local_min = INT_MAX;
@@ -37,7 +36,7 @@ void primMST(int graph[V][V]) {
                 }
             }
 
-            // global reduction to find the minimum d[u] 
+            // global reduction to find the min d[u] atomically
             #pragma omp critical
             {
                 if (local_min < min) {
@@ -48,7 +47,7 @@ void primMST(int graph[V][V]) {
         }
 
         if (u == -1) break;
-        mstSet[u] = true; // Add u to VT
+        mstSet[u] = true; // add u to VT
 
         // each process updates its part of d vector locally 
         #pragma omp parallel for
